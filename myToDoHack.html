@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="./css/todo.css">
+<script>
+$(document).ready(function(){
+    var i;
+    var myNodelist = [];
+    $.get("https://wt-c51c96b192de661a33698c52a44c4391-0.run.webtask.io/expressHack", function(data, status){
+        myObj = JSON.parse(data);
+        var i;
+        for (i=0; i < myObj.length; i++) {
+           createListItem(myObj[i]["todo"],myObj[i]["_id"],false);
+        }
+    });
+
+// Add a "checked" symbol when clicking on a list item
+var list = document.querySelector('ul');
+list.addEventListener('click', function(ev) {
+  if (ev.target.tagName === 'LI') {
+    ev.target.classList.toggle('checked');
+  }
+}, false);
+});
+</script>
+<script>
+function newElement() {
+  var inputValue = document.getElementById("myInput").value;
+  if (inputValue === '') {
+    alert("Please enter a task!");
+  } else {
+    $.post("https://wt-c51c96b192de661a33698c52a44c4391-0.run.webtask.io/expressHack?todo=" + inputValue, function(data, status){
+        createListItem(inputValue, data.replace(/"/g,""),true);
+        document.getElementById("myInput").value = "";
+    });
+  
+  }
+}
+function createListItem(listItemText,id,prepend) {
+        var li = document.createElement("li");
+        li.innerHTML = listItemText;
+        li.id = id;
+        if (prepend) {
+          document.getElementById("myUL").insertBefore(li,document.getElementById("myUL").firstChild);
+        } else {
+          document.getElementById("myUL").appendChild(li);
+        }
+        var span = document.createElement("SPAN");
+        var txt = document.createTextNode("\u00D7");
+        span.className = "close";
+        span.onclick = function() { 
+        $.ajax({
+             url: "https://wt-c51c96b192de661a33698c52a44c4391-0.run.webtask.io/expressHack?id=" + id,
+             type: 'DELETE',
+             success: function(result) {document.getElementById(id).remove();},
+             error: function(err) {alert(JSON.stringify(err));}
+             });
+        }
+        span.appendChild(txt);
+        li.appendChild(span);
+}
+</script>
+</head>
+<body>
+<div id="container" >
+<div id="myDIV" class="header">
+  <h2 style="margin:5px">My To Do List</h2>
+  <input type="text" id="myInput" placeholder="Enter a new task here...">
+  <div class="circle" onclick="newElement()"></div>
+</div>
+
+<ul id="myUL">
+  
+</ul>
+</div>
+</body>
+</html>
