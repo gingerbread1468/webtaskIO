@@ -1,5 +1,5 @@
 # webtaskIO
-This is a hack I did for Auth0 using webtask.io
+This is a simple demo of "function as a service" using webtask.io.
 
 It's a simple todo list that uses an mlab MongoDB database and Express routes inside of a webtask.io app.
 
