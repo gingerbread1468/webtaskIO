@@ -2,6 +2,7 @@ function getToDos() {
     var i;
     var myNodelist = [];
     $.get("https://wt-c51c96b192de661a33698c52a44c4391-0.run.webtask.io/expressHack", function (data, status) {
+       if (status == "success") {
         myObj = JSON.parse(data);
         var i;
         for (i = 0; i < myObj.length; i++) {
@@ -25,6 +26,9 @@ function getToDos() {
             span.appendChild(txt);
             li.appendChild(span)
         }
+       } else {
+         alert("Error getting tasks: " + JSON.stringify(status));
+       }
     });
 }
 function addCheckedSymbol() {
@@ -42,10 +46,10 @@ function newElement() {
         alert("Please enter a task!");
     } else {
         $.post("https://wt-c51c96b192de661a33698c52a44c4391-0.run.webtask.io/expressHack?todo=" + inputValue, function (data, status) {
+         if (status == "success") {
             var li = document.createElement("li");
-            var t = document.createTextNode(inputValue);
-            li.appendChild(t);
-            li.id = data;
+            li.innerHTML = inputValue;
+            li.id = data.replace(/"/g,'');
             document.getElementById("myUL").appendChild(li);
             var span = document.createElement("SPAN");
             var txt = document.createTextNode("\u00D7");
@@ -64,6 +68,9 @@ function newElement() {
             li.appendChild(span);
             document.getElementById("myUL").insertBefore(li, document.getElementById("myUL").firstChild);
             document.getElementById("myInput").value = "";
+         } else {
+            alert("Error inserting task: " + JSON.stringify(status));
+         }
         });
     }
 }
